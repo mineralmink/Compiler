@@ -32,7 +32,7 @@
 input :	 | input line 
 line :	'\n'  
 	| exp '\n'			{ printf("%d\n",$1);}
-	| SHOW reg '\n'			{printf("%d\n",$2);}
+	| SHOW reg '\n'			{ printf("%d\n",r[$2]);}
 	| LOAD reg '>' reg '\n' 	{
  		if( $2 == TOP || $2 == SIZE){ printf("Can't assign $top or $size to register.");}
 		else if( $4 == TOP || $4 == SIZE){ printf("Can't assign register to $top or $size.");}
@@ -55,19 +55,19 @@ exp :	  CONSTANT {$$ = $1;}
 		| '-' exp %prec NEG	{$$ = -$2;}
 		| exp '^' exp	{$$ = pow($1,$3);}
 		| '(' exp ')'	{$$ = $2;}
-reg:	R0
-	|R1
-	|R2
-	|R3
-	|R4
-	|R5
-	|R6
-	|R7
-	|R8
-	|R9
-	|ACC
-	|TOP
-	|SIZE
+reg:	R0	{$$ = R0;}
+	|R1	{$$ = R1;}
+	|R2	{$$ = R2;}
+	|R3	{$$ = R3;}
+	|R4	{$$ = R4;}
+	|R5	{$$ = R5;}
+	|R6	{$$ = R6;}
+	|R7	{$$ = R7;}
+	|R8	{$$ = R8;}
+	|R9	{$$ = R9;}
+	|ACC	{$$ = ACC;}
+	|TOP	{$$ = TOP;}
+	|SIZE	{$$ = SIZE;}
 
 %%
 
