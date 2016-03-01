@@ -33,6 +33,24 @@ int fromBinary();
 "("						{ return '(';}
 ")"						{ return ')';}
 
+"$r0"						{ return R0;}
+"$r1"						{ return R1;}
+"$r2"						{ return R2;}
+"$r3"						{ return R3;}
+"$r4"						{ return R4;}
+"$r5"						{ return R5;}
+"$r6"						{ return R6;}
+"$r7"						{ return R7;}
+"$r8"						{ return R8;}
+"$r9"						{ return R9;}
+"$acc"						{ return ACC;}
+"$top"						{ return TOP;}
+"$size"						{ return SIZE;}
+
+"LOAD"						{ return LOAD;}
+"SHOW"						{ return SHOW;}
+
+">"						{ return '>';} 
 
 {B}+"b"					{ yylval = fromBinary(); return(CONSTANT); }
 {H}+"h"					{ yylval = fromHexa(); return(CONSTANT); }
