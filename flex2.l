@@ -49,6 +49,9 @@ int fromBinary();
 
 "LOAD"						{ return LOAD;}
 "SHOW"						{ return SHOW;}
+"POP"						{ return POP;}
+"PUSH"						{ return PUSH;}
+"ASSIGN"					{return ASSIGN;} 
 
 ">"						{ return '>';} 
 

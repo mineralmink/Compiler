@@ -3,16 +3,20 @@
 	#include<math.h>
 	#include<stdlib.h>
 	#define YYSTYPE int
-	typedef struct {
-		int data;
-		int next;
-	} Stack;
-	Stack stack;
+	#define MAX 100
+	typedef struct Stack
+	{
+	  int data[MAX];
+	  int top;
+	}Stack;
+	Stack s;
 	int start=0;
 	int r[10];
 	int acc;
 	int top;
 	int size;
+	void push(Stack *s,int num);
+	int pop(Stack *s);
 	
 %}
 /*token*/
@@ -20,6 +24,9 @@
 %token ACC 11 TOP 12 SIZE 13 
 %token LOAD
 %token SHOW
+%token POP
+%token PUSH
+%token ASSIGN
 %token CONSTANT
 %left OR
 %left AND
@@ -37,6 +44,9 @@ line :	'\n'
  		if( $2 == TOP || $2 == SIZE){ printf("Can't assign $top or $size to register.");}
 		else if( $4 == TOP || $4 == SIZE){ printf("Can't assign register to $top or $size.");}
 		else {r[$4] = r[$2];} }
+	|PUSH reg	{ push(&s,r[$2]);}
+	|POP  reg	{r[$2] = pop(&s);}
+	|ASSIGN reg exp { r[$2] = $3;}
 	| error '\n'			{ yyerrok; }
 exp :	  CONSTANT {$$ = $1;}
 		| exp OR exp	{$$ = $1 | $3;}
@@ -74,7 +84,21 @@ reg:	R0	{$$ = R0;}
 void yyerror(char const *str) {
 	printf("\tError just happened.\n ");
 }
+
+void push(Stack *s,int num)
+{
+	s->top = s->top + 1;
+	s->data[s->top] = num;
+}
+int pop(Stack *s)
+{
+	int x;
+	  x = s->data[s->top];
+	  s->top = s->top - 1;
+	  return(x);
+}
 int main() {
+	s.top = 0;
 	yyparse();
 	return 0;
 }

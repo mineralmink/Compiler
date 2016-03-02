@@ -60,11 +60,14 @@ extern int yydebug;
     SIZE = 13,
     LOAD = 258,
     SHOW = 259,
-    CONSTANT = 260,
-    OR = 261,
-    AND = 262,
-    NEG = 263,
-    NOT = 264
+    POP = 260,
+    PUSH = 261,
+    ASSIGN = 262,
+    CONSTANT = 263,
+    OR = 264,
+    AND = 265,
+    NEG = 266,
+    NOT = 267
   };
 #endif
 
