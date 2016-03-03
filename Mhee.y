@@ -62,14 +62,20 @@ line :	'\n'
 	| POP reg						{ if($2 != ACC && $2 != TOP && $2 != SIZE) { if(!isEmpty()) { r[$2] = pop(); setTopAndSize(); }
  																																	 else { printf("Stack is Empty.\n"); yyerror();} }
 												else { printf("Can't assign number to $acc or $top or $size\n");yyerror();} }
+	| SHOW ERR			  {printf("SHOW only follow by register");er=1;yyerror();}
 	| SHOW error			  {printf("SHOW only follow by register");er=1;yyerror();}
-	| LOAD error '>' reg			  {printf("Can't load this input to register.");er=1;yyerror();}
-	| LOAD reg '>' error			  {printf("Can't load  register to this input.");er=1;yyerror();}
-	| LOAD reg error reg			  {printf("Wrong sympol of LOAD ");er=1;yyerror();}
-  | LOAD reg error error			  {printf("Can't load.");er=1;yyerror();}
+	/*| LOAD ERR '>' reg			  {printf("Can't load this input to register.");er=1;yyerror();}
+	| LOAD reg '>' ERR			  {printf("Can't load  register to this input.");er=1;yyerror();}
+	| LOAD reg ERR reg			  {printf("Wrong sympol of LOAD ");er=1;yyerror();}
+  | LOAD reg ERR ERR			  {printf("ERROR!");er=1;yyerror();}*/
+  | LOAD ERR				  {printf("ERROR!2");er=1;yyerror();}
+  | LOAD error				  {printf("");er=1;yyerror();}	
+	| PUSH ERR			  {printf("Can't PUSH this input"); er=1;yyerror();}
 	| PUSH error			  {printf("Can't PUSH this input"); er=1;yyerror();}
-	| POP error			  {printf("Can't POP to this input"); er=1;yyerror();}
+	| POP ERR			  {printf("Can't POP to this input"); er=1;yyerror();}
+        | POP error			  {printf("Can't POP to this input"); er=1;yyerror();}
 	| exp ERR 			{ printf("ERROR!");yyerror();}
+	| exp error 			{ printf("ERROR!");yyerror();}
 	| ERR	   			{ printf("ERROR!");yyerror();}
 	| error 			{ yyerror();}
 	

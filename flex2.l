@@ -30,10 +30,12 @@ void maximumMunch();
 "+"						{ return '+'; }
 "-"						{ return '-'; }
 "*"						{ return '*'; }
+"^"						{ return '^'; }
 "/"						{ return '/'; }
 "\\"						{ return '\\'; }
 "("						{ return '(';}
 ")"						{ return ')';}
+
 
 "$r0"						{ return R0;}
 "$r1"						{ return R1;}
