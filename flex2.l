@@ -1,3 +1,4 @@
+
 D			[0-9]
 L			[a-zA-Z_]
 H			[a-fA-F0-9]
@@ -17,10 +18,11 @@ IS			(u|U|l|L)*
 
 int fromHexa();
 int fromBinary();
+void maximumMunch();
 %}
 
 %%
-"OR"						{return	OR;}					
+"OR"						{return	OR;}
 "AND"						{ return AND; }
 "NEG"						{ return NEG; }
 "NOT"						{ return NOT;}
@@ -49,20 +51,23 @@ int fromBinary();
 
 "LOAD"						{ return LOAD;}
 "SHOW"						{ return SHOW;}
-"POP"						{ return POP;}
+"POP"							{ return POP;}
 "PUSH"						{ return PUSH;}
-"ASSIGN"					{return ASSIGN;} 
 
-">"						{ return '>';} 
+">"						{ return '>';}
 
 {B}+"b"					{ yylval = fromBinary(); return(CONSTANT); }
 {H}+"h"					{ yylval = fromHexa(); return(CONSTANT); }
 {D}+						{ yylval = atoi(yytext); return(CONSTANT); }
 
 [ \t\v\f]		{  }
-.			{ /* ignore bad characters */ }
+.			{ /* ignore bad characters */ maximumMunch(); return ERR;}
 
 %%
+
+void maximumMunch(){
+	while(input() != '\n');
+}
 
 int fromBinary()
 {
@@ -103,4 +108,3 @@ int fromHexa()
 	}
 	return result;
 }
-
