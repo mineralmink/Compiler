@@ -12,10 +12,7 @@
 	node* head = NULL;
 	node* tail = NULL;
 	// Register //
-	int r[10];
-	int acc;
-	int top;
-	int size;
+	int r[15];
 	void push(int data);
 	int pop();
 	void count();
@@ -24,7 +21,7 @@
 	int er=0;
 %}
 /*token*/
-%token R0 0 R1 1 R2 2 R3 3 R4 4 R5 5 R6 6 R7 7 R8 8 R9 9
+%token R0 14 R1 1 R2 2 R3 3 R4 4 R5 5 R6 6 R7 7 R8 8 R9 9
 %token ACC 11 TOP 12 SIZE 13
 %token LOAD
 %token SHOW
@@ -43,96 +40,71 @@ input :	 | input line
 line :	'\n'
 	| exp '\n'					{ if(er==0){ printf("%d\n",$1); }
 											  else{er=0;} }
-	| SHOW reg '\n'			{ if($2 != ACC && $2 != TOP && $2 != SIZE) {printf("%d\n",r[$2]);}
- 												else { if($2 == ACC) { printf("%d\n", acc); }
-															 else if($2 == TOP) { printf("%d\n", top);}
-														 	 else if($2 == SIZE) { printf("%d\n", size); }
-														 	 else{ printf("Error:SHOW follow by register only." );yyerror();}} setTopAndSize();}
-	| LOAD reg '>' reg '\n' 	{
-															if( $4 == TOP || $4 == SIZE || $4 == ACC){ printf("Can't assign register to $top or $size or $a.\n");yyerror();}
-															else { if($2 == ACC) { r[$4] = acc; }
-														 				 else if($2 == TOP) { r[$4] = top; }
-																	 	 else if($2 == SIZE) { r[$4] = size; }
-																		 else {r[$4] = r[$2];}}}
-	| PUSH reg 					{ if($2 != ACC && $2 != TOP && $2 != SIZE) { push(r[$2]); }
- 												else { if($2 == ACC) { push(acc); }
-											 				 else if($2 == TOP) {push(top); }
-														 	 else if($2 == SIZE) {push(size); }
-														 	 else { printf("Error:can't push this input." );yyerror();}} setTopAndSize();}
+	| rexp '\n'					{ if(er==0){ printf("%d\n",$1); }
+											  else{er=0;} }
+	| SHOW reg '\n'			{ printf("%d\n",r[$2]); }
+	| LOAD reg '>' reg '\n' 	{ if( $4 == TOP || $4 == SIZE || $4 == ACC){ printf("Can't assign register to $top or $size or $a.\n");yyerror();}
+															else { r[$4] = r[$2]; } }
+	| PUSH reg 					{ push(r[$2]); setTopAndSize();}
 	| POP reg						{ if($2 != ACC && $2 != TOP && $2 != SIZE) { if(!isEmpty()) { r[$2] = pop(); setTopAndSize(); }
  																																	 else { printf("Stack is Empty.\n"); yyerror();} }
 												else { printf("Can't assign number to $acc or $top or $size\n");yyerror();} }
-	| SHOW ERR			  {printf("SHOW only follow by register");er=1;yyerror();}
-	| SHOW error			  {printf("SHOW only follow by register");er=1;yyerror();}
-	/*| LOAD ERR '>' reg			  {printf("Can't load this input to register.");er=1;yyerror();}
-	| LOAD reg '>' ERR			  {printf("Can't load  register to this input.");er=1;yyerror();}
-	| LOAD reg ERR reg			  {printf("Wrong sympol of LOAD ");er=1;yyerror();}
-  | LOAD reg ERR ERR			  {printf("ERROR!");er=1;yyerror();}*/
-  | LOAD ERR				  {printf("ERROR!2");er=1;yyerror();}
-  | LOAD error				  {printf("");er=1;yyerror();}	
-	| PUSH ERR			  {printf("Can't PUSH this input"); er=1;yyerror();}
-	| PUSH error			  {printf("Can't PUSH this input"); er=1;yyerror();}
-	| POP ERR			  {printf("Can't POP to this input"); er=1;yyerror();}
-        | POP error			  {printf("Can't POP to this input"); er=1;yyerror();}
-	| exp ERR 			{ printf("ERROR!");yyerror();}
-	| exp error 			{ printf("ERROR!");yyerror();}
-	| ERR	   			{ printf("ERROR!");yyerror();}
-	| error 			{ yyerror();}
-	
-exp :	  CONSTANT  {$$ = $1; acc = $1;}
-		| exp OR exp	{$$ = $1 | $3; acc = $1 | $3;}
-		| exp AND exp	{$$ = $1 & $3; acc = $1 & $3;}
-		| NOT exp	{$$ = ~$2; acc = ~$2;}
-		| exp '+' exp	{$$ = $1 + $3; acc = $1 + $3;}
-		| exp '-' exp	{$$ = $1 - $3; acc = $1 - $3;}
-		| exp '*' exp	{$$ = $1 * $3; acc = $1 * $3;}
-		| exp '/' exp	{ if($3==0) { printf("Can't divide by 0."); er=1;yyerror();}
-										else $$ = $1 / $3; }
-		| exp '\\' exp	{ if($3==0) { printf("Can't mod by 0."); yyerror();er=1;}
-											else $$ = $1 % $3; acc = $1 % $3;}
-		| '-' exp 	{$$ = -$2; acc = -$2;}
-		| exp '^' exp	{$$ = pow($1,$3); acc = pow($1,$3);}
-		| '(' exp ')'	{$$ = $2; acc = $2;}
-		| reg OR reg	{ if($1 != ACC && $1 != TOP && $1 != SIZE) {$$ = r[$1] | r[$3]; acc = r[$1] | r[$3]; }
-										else {if($1 == ACC) {
-														if($3 == ACC) {$$ = acc | acc; acc = acc | acc; }
-														else if($3 == TOP) {$$ = acc | top; acc = acc | top; }
-										}}}
-		| reg AND reg	{$$ = $1 & $3; acc = $1 & $3;}
-		| NOT reg	{$$ = ~$2; acc = ~$2;}
-		| reg '+' reg	{$$ = $1 + $3; acc = $1 + $3;}
-		| reg '-' reg	{$$ = $1 - $3; acc = $1 - $3;}
-		| reg '*' reg	{$$ = $1 * $3; acc = $1 * $3;}
-		| reg '/' reg	{ if($3==0) { printf("Can't divide by 0."); er=1;yyerror();}
-										else $$ = $1 / $3; }
-		| reg '\\' reg	{ if($3==0) { printf("Can't mod by 0.");er=1; yyerror(); }
-											else $$ = $1 % $3; acc = $1 % $3;}
-		| '-' reg %prec NEG	{$$ = -$2; acc = -$2;}
-		| reg '^' reg	{$$ = pow($1,$3); acc = pow($1,$3);}
-		| '(' reg ')'	{$$ = $2; acc = $2;}
-		/*| error OR exp	{printf("ERROR!");yyerror();er=1;}
-		| exp OR error	{printf("ERROR!");yyerror();er=1;}
-		| error OR error	{printf("ERROR!");yyerror();er=1;}
-		| exp error exp	{printf("ERROR!");yyerror();er=1;}
-		| error AND exp	{printf("ERROR!");yyerror();er=1;}
-		| exp AND error	{printf("ERROR!");yyerror();er=1;}
-		| error AND error	{printf("ERROR!");yyerror();er=1;}
-		| NOT error	{printf("ERROR!");yyerror();er=1;}
-		| error '+' exp	{printf("ERROR!");yyerror();er=1;}
-		| exp '+' error	{printf("ERROR!");yyerror();er=1;}
-		| error '-' exp	{printf("ERROR!");yyerror();er=1;}
-		| exp '-' error	{printf("ERROR!");yyerror();er=1;}
-		| error '*' exp	{printf("ERROR!");yyerror();er=1;}
-		| exp '*' error	{printf("ERROR!");yyerror();er=1;}
-		| error '/' exp	{printf("ERROR!");yyerror();er=1;}
-		| exp '/' error	{printf("ERROR!");yyerror();er=1;}
-		| error '\\' exp	{printf("ERROR!");yyerror();er=1;}
-		| exp '\\' error	{printf("ERROR!");yyerror();er=1;}
-		| error '^' exp	{printf("ERROR!");yyerror();er=1;}
-		| exp '^' error	{printf("ERROR!");yyerror();er=1;}
-		| '(' error ')'	{printf("ERROR!");yyerror();er=1;}
-		| '-' error	{printf("ERROR!");yyerror();er=1;}*/
-reg:	R0
+	| SHOW ERR			  	{ printf("SHOW only follow by register");er=1;yyerror();}
+	| SHOW error			  { printf("SHOW only follow by register");er=1;yyerror();}
+ 	| LOAD ERR				  { printf("ERROR!2");er=1;yyerror();}
+  	| LOAD error				{ printf("");er=1;yyerror();}
+	| PUSH ERR			  	{ printf("Can't PUSH this input"); er=1;yyerror();}
+	| PUSH error			  { printf("Can't PUSH this input"); er=1;yyerror();}
+	| POP ERR			  		{ printf("Can't POP to this input"); er=1;yyerror();}
+  	| POP error			  	{ printf("Can't POP to this input"); er=1;yyerror();}
+	| exp ERR 					{ printf("ERROR!");yyerror();}
+	| exp error 				{ printf("ERROR!");yyerror();}
+	| ERR	   						{ printf("ERROR!");yyerror();}
+	| error 						{ yyerror();}
+exp :	  CONSTANT  		{ $$ = $1; r[ACC] = $1;}
+		| exp OR exp			{ $$ = $1 | $3; r[ACC] = $1 | $3;}
+		| exp AND exp			{ $$ = $1 & $3; r[ACC] = $1 & $3;}
+		| NOT exp					{ $$ = ~$2; r[ACC] = ~$2;}
+		| exp '+' exp			{ $$ = $1 + $3; r[ACC] = $1 + $3;}
+		| exp '-' exp			{ $$ = $1 - $3; r[ACC] = $1 - $3;}
+		| exp '*' exp			{ $$ = $1 * $3; r[ACC] = $1 * $3;}
+		| exp '/' exp			{ if($3 == 0) { printf("Can't divide by 0."); er=1;yyerror();}
+												else $$ = $1 / $3; r[ACC] = $1 / $3; }
+		| exp '\\' exp		{ if($3 == 0) { printf("Can't mod by 0."); yyerror();er=1;}
+												else $$ = $1 % $3; r[ACC] = $1 % $3;}
+		| '-' exp 			{ $$ = -$2; r[ACC] = -$2;}
+		| exp '^' exp			{ $$ = pow($1,$3); r[ACC] = pow($1,$3);}
+		| '(' exp ')'			{ $$ = $2; r[ACC] = $2;}
+
+rexp:		 reg 				{ $$ = r[$1]; r[ACC] = r[$1]; }
+		| reg OR reg			{ $$ = r[$1] | r[$3]; r[ACC] = r[$1] | r[$3]; }
+		| reg AND reg			{ $$ = r[$1] & r[$3]; r[ACC] = r[$1] & r[$3];}
+		| NOT reg					{ $$ = ~r[$2]; r[ACC] = ~r[$2];}
+		| reg '+' reg			{ $$ = r[$1] + r[$3]; r[ACC] = r[$1] + r[$3];}
+		| reg '-' reg			{ $$ = r[$1] - r[$3]; r[ACC] = r[$1] - r[$3];}
+		| reg '*' reg			{ $$ = r[$1] * r[$3]; r[ACC] = r[$1] * r[$3];}
+		| reg '/' reg			{ if($3 == 0) { printf("Can't divide by 0."); er=1;yyerror();}
+												else {$$ = r[$1] / r[$3]; r[ACC] = r[$1] / r[$3];}}
+		| reg '\\' reg		{ if($3 == 0) { printf("Can't mod by 0.");er=1; yyerror(); }
+												else $$ = r[$1] % r[$3]; r[ACC] = r[$1] % r[$3];}
+		| '-' reg 			{ $$ = -r[$2]; r[ACC] = -r[$2];}
+		| reg '^' reg			{ $$ = pow(r[$1], r[$3]); r[ACC] = pow(r[$1], r[$3]);}
+		| '(' reg ')'			{ $$ = r[$2]; r[ACC] = r[$2];}	
+		| reg OR reg			{ $$ = r[$1] | r[$3]; r[ACC] = r[$1] | r[$3]; }
+		| reg AND reg			{ $$ = r[$1] & r[$3]; r[ACC] = r[$1] & r[$3];}
+		| NOT reg					{ $$ = ~r[$2]; r[ACC] = ~r[$2];}
+		| reg '+' reg			{ $$ = r[$1] + r[$3]; r[ACC] = r[$1] + r[$3];}
+		| reg '-' reg			{ $$ = r[$1] - r[$3]; r[ACC] = r[$1] - r[$3];}
+		| reg '*' reg			{ $$ = r[$1] * r[$3]; r[ACC] = r[$1] * r[$3];}
+		| reg '/' reg			{ if($3 == 0) { printf("Can't divide by 0."); er=1;yyerror();}
+												else {$$ = r[$1] / r[$3]; r[ACC] = r[$1] / r[$3];}}
+		| reg '\\' reg		{ if($3 == 0) { printf("Can't mod by 0.");er=1; yyerror(); }
+												else {$$ = r[$1] % r[$3]; r[ACC] = r[$1] % r[$3];}}
+		| '-' reg 			{ $$ = -r[$2]; r[ACC] = -r[$2];}
+		| reg '^' reg			{ $$ = pow(r[$1], r[$3]); r[ACC] = pow(r[$1], r[$3]);}
+		| '(' reg ')'			{ $$ = r[$2]; r[ACC] = r[$2];}
+
+reg:	R0 { $$ = R0; }
 	|R1 { $$ = R1; }
 	|R2	{ $$ = R2; }
 	|R3 { $$ = R3; }
@@ -145,7 +117,6 @@ reg:	R0
 	|ACC { $$ = ACC; }
 	|TOP { $$ = TOP; }
 	|SIZE { $$ = SIZE; }
-//alphabet: |IGNORED alphabet | CONSTANT  | " " alphabet | MIXCHAR alphabet
 %%
 void yyerror() {
 	  printf("\n");
@@ -192,15 +163,15 @@ void count() {
 		count++;
 		temp = (*temp).next;
 	}
-	size = count;
+	r[SIZE] = count;
 }
 void setTopAndSize() {
 	count();
 	if(head != NULL) {
-		top = (*head).data;
+		r[TOP] = (*head).data;
 	}
 	else {
-		top = 0;
+		r[TOP] = 0;
 	}
 }
 int main() {

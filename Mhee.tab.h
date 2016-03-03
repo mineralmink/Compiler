@@ -45,7 +45,7 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    R0 = 0,
+    R0 = 14,
     R1 = 1,
     R2 = 2,
     R3 = 3,
