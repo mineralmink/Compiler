@@ -62,13 +62,13 @@ line :	'\n'
 	| POP reg						{ if($2 != ACC && $2 != TOP && $2 != SIZE) { if(!isEmpty()) { r[$2] = pop(); setTopAndSize(); }
  																																	 else { printf("Stack is Empty.\n"); yyerror();} }
 												else { printf("Can't assign number to $acc or $top or $size\n");yyerror();} }
-	/*| SHOW error			  {printf("SHOW only follow by register");er=1;yyerror();}
+	| SHOW error			  {printf("SHOW only follow by register");er=1;yyerror();}
 	| LOAD error '>' reg			  {printf("Can't load this input to register.");er=1;yyerror();}
 	| LOAD reg '>' error			  {printf("Can't load  register to this input.");er=1;yyerror();}
 	| LOAD reg error reg			  {printf("Wrong sympol of LOAD ");er=1;yyerror();}
   | LOAD reg error error			  {printf("Can't load.");er=1;yyerror();}
 	| PUSH error			  {printf("Can't PUSH this input"); er=1;yyerror();}
-	| POP error			  {printf("Can't POP to this input"); er=1;yyerror();}*/
+	| POP error			  {printf("Can't POP to this input"); er=1;yyerror();}
 	| exp ERR 			{ printf("ERROR!");yyerror();}
 	| ERR	   			{ printf("ERROR!");yyerror();}
 	| error 			{ yyerror();}
